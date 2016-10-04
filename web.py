@@ -16,6 +16,10 @@ mysql.init_app(app)
 def search():
     return render_template('search.html')
 
+@app.route("/add")
+def add():
+    return render_template('add.html')
+
 @app.route('/search_stock',methods=['POST'])
 def search_stock():
     temp = []
@@ -34,6 +38,17 @@ def search_stock():
             temp.append("StockName: "+str(row[1]))
         context = dict(info = temp)
     return render_template('search.html', **context)
+
+@app.route('/add_stock',methods=['POST'])
+def add_stock():
+    name1 = request.form['stockname']
+    price1 = request.form['stockprice']
+    connection=mysql.get_db()
+    cursor = connection.cursor()
+    query="""INSERT INTO new_table (name,price) VALUES(%s,%s)"""
+    cursor.execute(query,(name1,price1))
+    connection.commit()
+    return render_template('add_finish.html')
 
 @app.route("/")
 def main():
