@@ -6,6 +6,7 @@ Also, we can add a new record of the stock(name, price) into the database.
 The database we used is MYSQL running on the localhost.
 
 Schema of the database called "stock":
+
 CREATE TABLE new_table
 (
     Name varchar(45) NOT NULL,
