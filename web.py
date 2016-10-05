@@ -2,7 +2,6 @@ import os
 from flask import Flask, render_template, request
 from flaskext.mysql import MySQL
 
-
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 mysql = MySQL()
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -20,13 +19,17 @@ def search():
 def add():
     return render_template('add.html')
 
+@app.route("/delete")
+def delete():
+    return render_template('delete.html')
+
 @app.route('/search_stock',methods=['POST'])
 def search_stock():
     temp = []
     info = []
     stockname = request.form['stockname']
     cursor = mysql.connect().cursor()
-    cursor.execute("""SELECT * FROM new_table WHERE name = %s;""",(stockname,))
+    cursor.execute("""SELECT * FROM stock WHERE name = %s;""",(stockname,))
     rec=cursor.fetchall()
     if rec is None:
         context = "The stock is not in the database"
@@ -45,10 +48,22 @@ def add_stock():
     price1 = request.form['stockprice']
     connection=mysql.get_db()
     cursor = connection.cursor()
-    query="""INSERT INTO new_table (name,price) VALUES(%s,%s)"""
+    query="""INSERT INTO stock (name,price) VALUES(%s,%s)"""
     cursor.execute(query,(name1,price1))
     connection.commit()
-    return render_template('add_finish.html')
+    return render_template('index.html')
+
+
+@app.route('/delete_stock',methods=['POST'])
+def delete_stock():
+    stock_name=request.form['stockname']
+    query = "DELETE FROM stock WHERE name = %s"
+    connection=mysql.get_db()
+    cursor=connection.cursor()
+    cursor.execute(query,stock_name)
+    connection.commit()
+
+    return render_template('index.html')
 
 @app.route("/")
 def main():
